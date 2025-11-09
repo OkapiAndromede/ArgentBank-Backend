@@ -1,10 +1,10 @@
-swagger: '2.0'
+swagger: "2.0"
 info:
   title: Bank Argent API documentation
   description: Contains all available API endpoints in this codebase
-  version: '1.0.0'
-  termsOfService: 'http://swagger.io/terms/'
-host: localhost:3001
+  version: "1.0.0"
+  termsOfService: "http://swagger.io/terms/"
+host: localhost:3010
 basePath: /api/v1
 schemes:
   - http
@@ -21,17 +21,17 @@ paths:
           description: Login Payload
           required: true
           schema:
-            $ref: '#/definitions/Login'
+            $ref: "#/definitions/Login"
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Login Successfully
           schema:
-            $ref: '#/definitions/LoginResponse'
-        '400':
+            $ref: "#/definitions/LoginResponse"
+        "400":
           description: Invalid Fields
-        '500':
+        "500":
           description: Internal Server Error
   /user/signup:
     post:
@@ -45,17 +45,17 @@ paths:
           description: Signup Payload
           required: true
           schema:
-            $ref: '#/definitions/User'
+            $ref: "#/definitions/User"
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: Signup Successfully
           schema:
-            $ref: '#/definitions/ApiResponse'
-        '400':
+            $ref: "#/definitions/ApiResponse"
+        "400":
           description: Invalid Fields
-        '500':
+        "500":
           description: Internal Server Error
   /user/profile:
     get:
@@ -66,15 +66,15 @@ paths:
       summary: User Profile API
       description: API for fetching a user profile
       #produces:
-       # - application/json
+      # - application/json
       responses:
-        '200':
+        "200":
           description: User profile retrieved successully
           schema:
-            $ref: '#/definitions/ApiResponse'
-        '400':
+            $ref: "#/definitions/ApiResponse"
+        "400":
           description: Invalid Fields
-        '500':
+        "500":
           description: Internal Server Error
     put:
       security:
@@ -89,17 +89,140 @@ paths:
           description: Update user profile attributes
           required: true
           schema:
-            $ref: '#/definitions/UserProfile'
+            $ref: "#/definitions/UserProfile"
       produces:
         - application/json
       responses:
-        '200':
+        "200":
           description: User profile retrieved successully
           schema:
-            $ref: '#/definitions/ApiResponse'
-        '400':
+            $ref: "#/definitions/ApiResponse"
+        "400":
           description: Invalid Fields
-        '500':
+        "500":
+          description: Internal Server Error
+  /user/accounts:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - User Module
+      summary: User Account API
+      description: API for fetching user accounts
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: User accounts retrieved successfully
+          schema:
+            $ref: "#/definitions/AccountsResponse"
+        "400":
+          description: Invalid Fields
+        "401":
+          description: Invalid JWT
+        "500":
+          description: Internal Server Error
+  /user/accounts/{accountId}/transactions:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - User Module
+      summary: Get transactions for a specific account
+      description: Retrieve all transactions for a given account ID
+      produces:
+        - application/json
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          type: integer
+          description: ID of the account to retrieve transactions for
+      responses:
+        "200":
+          description: Transactions retrieved successfully
+          schema:
+            $ref: "#/definitions/TransactionsResponse"
+        "400":
+          description: Invalid account ID
+        "401":
+          description: Invalid JWT
+        "404":
+          description: Account not found
+        "500":
+          description: Internal Server Error
+  /user/accounts/{accountId}/transactions/{transactionId}:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - User Module
+      summary: Get details of a specific transaction
+      description: Retrieve full details of a transaction by account and transaction ID
+      produces:
+        - application/json
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          type: integer
+          description: ID of the account containing the transaction
+        - name: transactionId
+          in: path
+          required: true
+          type: integer
+          description: ID of the transaction to retrieve
+      responses:
+        "200":
+          description: Transaction details retrieved successfully
+          schema:
+            $ref: "#/definitions/TransactionDetail"
+        "400":
+          description: Invalid parameters
+        "401":
+          description: Invalid JWT
+        "404":
+          description: Transaction not found
+        "500":
+          description: Internal Server Error
+    patch:
+      security:
+        - Bearer: []
+      tags:
+        - User Module
+      summary: Update specific fields of a transaction
+      description: Modify category or note of a specific transaction
+      consumes:
+        - application/json
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          type: integer
+          description: ID of the account containing the transaction
+        - name: transactionId
+          in: path
+          required: true
+          type: integer
+          description: ID of the transaction to update
+        - in: body
+          name: transaction
+          description: Fields to update
+          required: true
+          schema:
+            $ref: "#/definitions/TransactionUpdate"
+      responses:
+        "200":
+          description: Transaction update successfully
+          schema:
+            $ref: "#/definitions/TransactionDetail"
+        "400":
+          description: Invalid input
+        "401":
+          description: Invalid JWT
+        "404":
+          description: Transaction not found
+        "500":
           description: Internal Server Error
 securityDefinitions:
   Bearer:
@@ -156,3 +279,121 @@ definitions:
     properties:
       userName:
         type: string
+  Account:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+        description: Unique account identifier
+      title:
+        type: string
+        example: Argent Bank Checking
+        description: Account title
+      totalTransactions:
+        type: integer
+        example: 8349
+        description: Number of transaction
+      amount:
+        type: number
+        format: float
+        example: 2082.79
+        description: Current account balance
+      description:
+        type: string
+        example: Available Balance
+        description: Type of balance shown
+  AccountsResponse:
+    type: object
+    properties:
+      funds:
+        type: array
+        description: List of all user accounts
+        items:
+          $ref: "#/definitions/Account"
+    example:
+      funds:
+        - id: 1
+          title: Argent Bank Checking
+          totalTransactions: 8349
+          amount: 2082.79
+          description: Available Balance
+        - id: 2
+          title: Argent Bank Savings
+          totalTransactions: 6712
+          amount: 10928.42
+          description: Available Balance
+        - id: 3
+          title: Argent Bank Credit Card
+          totalTransactions: 8349
+          amount: 184.3
+          description: Current Balance
+  Transaction:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+        description: Unique transaction ID
+      date:
+        type: string
+        format: date
+        example: 2020-02-27
+        description: Date of the transaction
+      description:
+        type: string
+        example: Golden Sun Bakery
+        description: Transaction label
+      amount:
+        type: number
+        format: float
+        example: 8.0
+        description: Amount of the transaction
+  TransactionsResponse:
+    type: object
+    properties:
+      transactions:
+        type: array
+        description: List of transactions for the specified account
+        items:
+          $ref: "#/definitions/Transaction"
+    example:
+      transactions:
+        - id: 1
+          date: 2020-02-27
+          description: Golden Sun Bakery
+          amount: 8.0
+        - id: 2
+          date: 2020-02-26
+          description: Supermarket Carrefour
+          amount: 8.0
+  TransactionDetail:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+        description: Unique transaction ID
+      transactionType:
+        type: string
+        example: Electronic
+        description: Type of transaction
+      category:
+        type: string
+        example: Food
+        description: Category assigned to the transaction
+      note:
+        type: string
+        example: "Coffee and croissant at Golden Sun Bakery"
+        description: User's personal note for the transaction
+  TransactionUpdate:
+    type: object
+    properties:
+      category:
+        type: string
+        example: "Restaurant"
+        description: Updated transaction category
+      note:
+        type: string
+        example: "Dinner with friends"
+        description: Updated transaction note
