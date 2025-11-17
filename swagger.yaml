@@ -67,6 +67,8 @@ paths:
       description: API for fetching a user profile
       #produces:
       # - application/json
+      parameters:
+        - $ref: "#/parameters/AuthorizationHeader"
       responses:
         "200":
           description: User profile retrieved successully
@@ -84,6 +86,7 @@ paths:
       summary: User Profile API
       description: API for updating a user profile
       parameters:
+        - $ref: "#/parameters/AuthorizationHeader"
         - in: body
           name: body
           description: Update user profile attributes
@@ -111,6 +114,8 @@ paths:
       description: API for fetching user accounts
       produces:
         - application/json
+      parameters:
+        - $ref: "#/parameters/AuthorizationHeader"
       responses:
         "200":
           description: User accounts retrieved successfully
@@ -133,6 +138,7 @@ paths:
       produces:
         - application/json
       parameters:
+        - $ref: "#/parameters/AuthorizationHeader"
         - name: accountId
           in: path
           required: true
@@ -162,6 +168,7 @@ paths:
       produces:
         - application/json
       parameters:
+        - $ref: "#/parameters/AuthorizationHeader"
         - name: accountId
           in: path
           required: true
@@ -195,6 +202,7 @@ paths:
       consumes:
         - application/json
       parameters:
+        - $ref: "#/parameters/AuthorizationHeader"
         - name: accountId
           in: path
           required: true
@@ -229,6 +237,13 @@ securityDefinitions:
     type: apiKey
     name: Authorization
     in: header
+parameters:
+  AuthorizationHeader:
+    name: Authorization
+    in: header
+    type: string
+    required: true
+    description: JWT à envoyer dans le header Authorization (format Bearer <token>)
 definitions:
   User:
     properties:
