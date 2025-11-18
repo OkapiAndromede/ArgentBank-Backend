@@ -27,16 +27,6 @@ responses:
         error: "InternalServerError"
         message: "An unexpected error occurred on the server"
 
-  BadRequestError:
-    description: Invalid request data
-    schema:
-      $ref: "#/definitions/BadRequestResponse"
-    examples:
-      application/json:
-        error: "BadRequest"
-        message: "Invalid request fields"
-        invalidFields: []
-
 parameters:
   AuthorizationHeader:
     name: Authorization
@@ -67,7 +57,20 @@ paths:
           schema:
             $ref: "#/definitions/LoginResponse"
         "400":
-          $ref: "#/responses/BadRequestError"
+          description: Invalid request data
+          schema:
+            $ref: "#/definitions/BadRequestResponse"
+          examples:
+            application/json:
+              error: "BadRequest"
+              message: "Invalid request fields"
+              invalidFields:
+                [
+                  {
+                    "field": "userName",
+                    "issue": "userName is required and must be a non empty string",
+                  },
+                ]
         "500":
           $ref: "#/responses/InternalServerError"
   /user/signup:
@@ -91,7 +94,20 @@ paths:
           schema:
             $ref: "#/definitions/ApiResponse"
         "400":
-          $ref: "#/responses/BadRequestError"
+          description: Invalid request data
+          schema:
+            $ref: "#/definitions/BadRequestResponse"
+          examples:
+            application/json:
+              error: "BadRequest"
+              message: "Invalid request fields"
+              invalidFields:
+                [
+                  {
+                    "field": "userName",
+                    "issue": "userName is required and must be a non empty string",
+                  },
+                ]
         "500":
           $ref: "#/responses/InternalServerError"
   /user/profile:
@@ -138,7 +154,20 @@ paths:
           schema:
             $ref: "#/definitions/ApiResponse"
         "400":
-          $ref: "#/responses/BadRequestError"
+          description: Invalid request data
+          schema:
+            $ref: "#/definitions/BadRequestResponse"
+          examples:
+            application/json:
+              error: "BadRequest"
+              message: "Invalid request fields"
+              invalidFields:
+                [
+                  {
+                    "field": "userName",
+                    "issue": "userName is required and must be a non empty string",
+                  },
+                ]
         "401":
           $ref: "#/responses/UnauthorizedError"
         "500":
@@ -194,7 +223,13 @@ paths:
             application/json:
               error: "BadRequest"
               message: "Invalid account ID"
-              invalidFields: ["accountId"]
+              invalidFields:
+                [
+                  {
+                    "field": "accountID",
+                    "issue": "accountId must be a valid integer",
+                  },
+                ]
         "401":
           $ref: "#/responses/UnauthorizedError"
         "404":
@@ -235,7 +270,20 @@ paths:
           schema:
             $ref: "#/definitions/TransactionDetail"
         "400":
-          $ref: "#/responses/BadRequestError"
+          description: Invalid account ID
+          schema:
+            $ref: "#/definitions/BadRequestResponse"
+          examples:
+            application/json:
+              error: "BadRequest"
+              message: "Invalid transaction ID"
+              invalidFields:
+                [
+                  {
+                    "field": "transactionID",
+                    "issue": "transactionID must be a valid integer",
+                  },
+                ]
         "401":
           $ref: "#/responses/UnauthorizedError"
         "404":
@@ -281,7 +329,20 @@ paths:
           schema:
             $ref: "#/definitions/TransactionDetail"
         "400":
-          $ref: "#/responses/BadRequestError"
+          description: Invalid account ID
+          schema:
+            $ref: "#/definitions/BadRequestResponse"
+          examples:
+            application/json:
+              error: "BadRequest"
+              message: "Invalid request fields"
+              invalidFields:
+                [
+                  {
+                    "field": "category",
+                    "issue": "category is required and must be a non empty string",
+                  },
+                ]
         "401":
           $ref: "#/responses/UnauthorizedError"
         "404":
@@ -475,6 +536,13 @@ definitions:
         type: string
       message:
         type: string
+  FieldError:
+    type: object
+    properties:
+      field:
+        type: string
+      issue:
+        type: string
   BadRequestResponse:
     type: object
     properties:
@@ -487,5 +555,4 @@ definitions:
       invalidFields:
         type: array
         items:
-          type: string
-        description: Liste des champs invalides
+          $ref: "#/definitions/FieldError"
